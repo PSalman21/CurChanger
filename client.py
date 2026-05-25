@@ -79,4 +79,8 @@ class CurrencyConverter(QMainWindow):
                 
         except requests.ConnectionError:
             QMessageBox.critical(self, "Ошибка", "Нет соединения с сервером")
-        
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = CurrencyConverter()
+    window.show()
+    sys.exit(app.exec_())
