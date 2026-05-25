@@ -38,3 +38,14 @@ class CurrencyConverter(QMainWindow):
         self.status_label = QLabel("Статус: Готов")
         self.status_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.status_label)
+
+        self.check_server()
+    
+    def check_server(self):
+        try:
+            response = requests.get(f"{API_URL}/", timeout=2)
+            self.status_label.setText("Статус: Подключен")
+        except:
+            self.status_label.setText("Статус: Сервер не запущен")
+            self.convert_btn.setEnabled(False)
+        
