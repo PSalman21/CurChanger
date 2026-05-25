@@ -48,4 +48,35 @@ class CurrencyConverter(QMainWindow):
         except:
             self.status_label.setText("Статус: Сервер не запущен")
             self.convert_btn.setEnabled(False)
+
+    def convert(self):
+        try:
+            amount = float(self.amount_input.text())
+            if amount <= 0:
+                QMessageBox.warning(self, "Ошибка", "Сумма должна быть положительной")
+                return
+        except ValueError:
+            QMessageBox.warning(self, "Ошибка", "Неверная сумма")
+            return
+        
+        try:
+            response = requests.post(f"{API_URL}/convert", json={
+                "from_currency": self.from_combo.currentText(),
+                "to_currency": self.to_combo.currentText(),
+                "amount": amount
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.result_label.setText(
+                    f"{data['amount']} {data['from_currency']} = "
+                    f"{data['converted_amount']} {data['to_currency']}\n"
+                    f"Курс: 1 {data['from_currency']} = {data['rate']} {data['to_currency']}"
+                )
+            else:
+                error = response.json().get("detail", "Неизвестная ошибка")
+                QMessageBox.warning(self, "Ошибка", error)
+                
+        except requests.ConnectionError:
+            QMessageBox.critical(self, "Ошибка", "Нет соединения с сервером")
         
